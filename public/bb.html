@@ -1,0 +1,186 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>点击就送屠龙宝刀的强化宝石-》笨笨的头</title>
+    <style>
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        button {
+            margin-top: 30px;
+        }
+    </style>
+    <script src="javascripts/stats.js"></script>
+    <script src="javascripts/three.js"></script>
+    <script src="javascripts/Tween.js"></script>
+</head>
+<body>
+    <divs style="position:absolute;width:500px;margin-top:30px">
+<a  style="font-size:20px;background:red;">图片是画图画的，手头没有PS,所以背景不是透明的</br>
+此网站为开源网站，欢迎大家在我的github项目主页上提意见</br>
+欢迎 Pull requests</br>
+https://github.com/haozi23333/canvas-bb
+</a>
+        <button class="x" onclick="speed_up(this)" style="position:relative;">
+            加速x
+        </button>
+        <button class="x" onclick="speed_down(this)" style="position: relative;">
+            减速x
+        </button>
+        <button class="y" onclick="speed_up(this)" style="position:relative">
+            加速y
+        </button>
+        <button class="y" onclick="speed_down(this)" style="position: relative">
+            减速y
+        </button>
+        <button id="restart" onclick="speed_x=0.05,speed_y=0.05" style="position: relative;">
+            还原
+        </button>
+        <button class="x" onclick="size_up(this)" style="position:relative;">
+            放大x
+        </button>
+        <button class="x" onclick="size_down(this)" style="position: relative;">
+            缩小x
+        </button>
+        <button class="y" onclick="size_up(this)" style="position:relative;">
+            放大y
+        </button>
+        <button class="y" onclick="size_down(this)" style="position: relative;">
+            缩小y
+        </button>
+        <button class="z" onclick="size_up(this)" style="position:relative;">
+            放大z
+        </button>
+        <button class="z" onclick="size_down(this)" style="position: relative;">
+            缩小z
+        </button>
+
+        <button onclick="box_x=1,box_y=1;box_z=1" style="position: relative;">
+            还原
+        </button>
+    </divs>
+</body>
+</html>
+
+<script>
+    speed_x = 0.05;
+    speed_y = 0.05;
+    box_x = 1;
+    box_y = 1;
+    box_z = 1;
+    var stats = new Stats();
+    stats.setMode(0); // 0: fps, 1: ms
+    // 将stats的界面对应左上角
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.left = '0px';
+    stats.domElement.style.top = '0px';
+    document.body.appendChild(stats.domElement);
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    var geometry = new THREE.CubeGeometry(box_x, box_y, box_z);
+    var texture = THREE.ImageUtils.loadTexture("images/bb.png", null, function (t) {
+    });
+    var texture2 = THREE.ImageUtils.loadTexture("images/bt.png", null, function (t) {
+    });
+var texture3 = THREE.ImageUtils.loadTexture("images/cha.png", null, function (t) {
+    });
+
+    var material = new THREE.MeshBasicMaterial({ map: texture });
+    var material2 = new THREE.MeshBasicMaterial({ map: texture2 });
+ var material3 = new THREE.MeshBasicMaterial({ map: texture3 });
+
+    // THREE.Texture(image,THREE.UVMapping(-1,-1));
+    //var material = new THREE.MeshBasicMaterial({color: 0x66ccff});
+    var cube = new THREE.Mesh(geometry, material);
+
+    scene.add(cube);
+    var pm = new THREE.PlaneGeometry(3, 1.5);
+
+    var xx = new THREE.Mesh(pm, material2);
+    xx.position.x = 0;
+    xx.position.y = 2;
+
+ var cha = new THREE.PlaneGeometry(3, 1.5);
+var cha1 = new THREE.Mesh(cha, material3);
+ cha1.position.x = 0;
+    cha1.position.y = -2;
+ scene.add(cha1);
+
+    camera.position.z = 5;
+    scene.add(xx);
+    function render() {
+        requestAnimationFrame(render);
+        cube.rotation.x += speed_x;
+        cube.rotation.y += speed_y;
+        //  cube.position.x+=0.1;
+        renderer.render(scene, camera);
+        stats.update();
+    }
+    render();
+    function speed_up(a) {
+        switch (a.className) {
+            case 'x':
+                a.innerHTML = "现在X速度为：" + speed_x + "    点击加速";
+                speed_x += 0.1;
+                break;
+            case 'y':
+                a.innerHTML = "现在y速度为：" + speed_y + "    点击加速";
+                speed_y += 0.1;
+                break;
+        }
+    }
+    function speed_down(a) {
+        switch (a.className) {
+            case 'x':
+                a.innerHTML = "现在X速度为：" + speed_x + "    点击减速";
+                speed_x -= 0.1;
+                break;
+            case 'y':
+                a.innerHTML = "现在y速度为：" + speed_y + "    点击减速";
+                speed_y -= 0.1;
+                break;
+        }
+    }
+
+    function size_up(a) {
+
+        switch (a.className) {
+            case 'x':
+                a.innerHTML = "现在" + a.className + "大小为：" + box_x + "    点击变大";
+                box_x += 0.1;
+                break;
+            case 'y':
+                a.innerHTML = "现在" + a.className + "大小为：" + box_y + "    点击变大";
+                box_y += 0.1;
+                break;
+            case 'z':
+                a.innerHTML = "现在" + a.className + "大小为：" + box_z + "    点击变大";
+                box_z += 0.1;
+                break;
+        }
+    }
+    function size_down(a) {
+
+        switch (a.className) {
+            case 'x':
+                a.innerHTML = "现在" + a.className + "大小为：" + box_x + "    点击变小";
+                box_x -= 0.1;
+                break;
+            case 'y':
+                a.innerHTML = "现在" + a.className + "大小为：" + box_y + "    点击变小";
+                box_y -= 0.1;
+                break;
+            case 'z':
+                a.innerHTML = "现在" + a.className + "大小为：" + box_z + "    点击变小";
+                box_z -= 0.1;
+                break;
+        }
+    }
+
+</script>
