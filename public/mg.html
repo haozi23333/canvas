@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html  lang="en">
+  <head>
+    <meta charset="utf-8">
+      <script src="arr.js"></script>
+    <title>
+    canvas
+    </title>
+  <style>
+    body{
+      overflow-x: hidden;
+      overflow-y: hidden;
+    }
+  </style>
+  </head>
+
+  <body style="height:100%" onkeydown="key_down(this)">
+<canvas id="canvas" ></canvas>
+  </body>
+</html>
+<script type="application/javascript">
+  var b_height=b_width=50;
+  var a=map
+  var x=y= 1,ceng=2;
+  var canvas= document.getElementById('canvas');
+  var fangxiang=1;//0s1x2z3y
+  var context=canvas.getContext('2d');
+  canvas.height=window.innerHeight;
+  canvas.width=window.innerWidth;
+
+  function addblock(x,y,color,cxt) {
+      cxt.beginPath();
+      cxt.fillStyle=color;
+      cxt.fillRect(x,y,b_width,b_height);
+  }
+
+    function dt(mun,cxt)
+    {
+        ceng=mun;
+        cxt.clearRect(0,0,canvas.height,canvas.width);
+
+          for(var i=0;i< a[mun].length;i++)
+        {
+            for(var j=0;j<a[mun][i].length;j++)
+            {
+                if(a[mun][i][j]==1)
+                {
+                    addblock((b_height+1)*j,(b_width+1)*i,'red',cxt);
+                }
+                if(a[mun][i][j]==2)
+                {
+                    addblock((b_height+1)*j,(b_width+1)*i,'green',cxt);
+                }
+            }
+
+        }
+
+    }
+
+    window.onload= function () {
+        dt(2,context);
+    }
+
+  function key_down(e)
+  {
+      var _c=window.event.keyCode;
+      switch (_c)
+      {
+          case 37://左
+              if(map[ceng][y][x-1]==0)
+              {
+                  map[ceng][y][x]=0;
+                  map[ceng][y][x-1]=2;
+                  x--;
+                  d=2;
+              }
+              break;
+          case 38://上
+              if(map[ceng][y-1][x]==0)
+              {
+                  map[ceng][y][x]=0;
+                  map[ceng][y-1][x]=2;
+                  y--;
+                  d=0;
+              }
+              break;
+          case 39://右
+              if(map[ceng][y][x+1]==0)
+              {
+                  map[ceng][y][x]=0;
+                  map[ceng][y][x+1]=2;
+                  x++;
+                  d=3;
+              }
+              break;
+          case 40://下
+
+              if(map[ceng][y+1][x]==0)
+              {
+                  map[ceng][y][x]=0;
+                  map[ceng][y+1][x]=2;
+                  y++;
+                  d=1;
+              }
+              break;
+//          case 32://space
+//           zidan();
+//              break;
+      }
+
+  }
+
+
+
+
+    setInterval(function (){ dt(ceng,context);
+    },34)
+
+</script>
+
