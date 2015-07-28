@@ -17,7 +17,7 @@
     <script src="javascripts/three.js"></script>
     <script src="javascripts/Tween.js"></script>
 </head>
-<body>
+<body onkeydown="key_down()">
     <divs style="position:absolute;width:500px;margin-top:30px">
 <a  style="font-size:20px;background:red;">图片是画图画的，手头没有PS,所以背景不是透明的</br>
 此网站为开源网站，欢迎大家在我的github项目主页上提意见</br>
@@ -39,28 +39,7 @@ https://github.com/haozi23333/canvas
         <button id="restart" onclick="speed_x=0.05,speed_y=0.05" style="position: relative;">
             还原
         </button>
-        <!--<button class="x" onclick="size_up(this)" style="position:relative;">-->
-            <!--放大x-->
-        <!--</button>-->
-        <!--<button class="x" onclick="size_down(this)" style="position: relative;">-->
-            <!--缩小x-->
-        <!--</button>-->
-        <!--<button class="y" onclick="size_up(this)" style="position:relative;">-->
-            <!--放大y-->
-        <!--</button>-->
-        <!--<button class="y" onclick="size_down(this)" style="position: relative;">-->
-            <!--缩小y-->
-        <!--</button>-->
-        <!--<button class="z" onclick="size_up(this)" style="position:relative;">-->
-            <!--放大z-->
-        <!--</button>-->
-        <!--<button class="z" onclick="size_down(this)" style="position: relative;">-->
-            <!--缩小z-->
-        <!--</button>-->
 
-        <!--<button onclick="box_x=1,box_y=1;box_z=1" style="position: relative;">-->
-            <!--还原-->
-        <!--</button>-->
     </divs>
 </body>
 </html>
@@ -68,10 +47,12 @@ https://github.com/haozi23333/canvas
 <script>
     speed_x = 0.05;
     speed_y = 0.05;
-    box_x = 2;
-    box_y = 2;
-    box_z = 2;
+    box_x = 1;
+    box_y = 1;
+    box_z = 1;
+    var d=1;
     var stats = new Stats();
+    var zidan_arr=[];
     stats.setMode(0); // 0: fps, 1: ms
     // 将stats的界面对应左上角
     stats.domElement.style.position = 'absolute';
@@ -85,6 +66,7 @@ https://github.com/haozi23333/canvas
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
     var geometry = new THREE.CubeGeometry(box_x, box_y, box_z);
+    var zidan_mx=new THREE.CubeGeometry(0.5, 0.5, 0.5);
     //申明材质
     var texture = THREE.ImageUtils.loadTexture("images/bb.png", null, function (t) {
     });
@@ -92,13 +74,15 @@ https://github.com/haozi23333/canvas
     });
     var texture3 = THREE.ImageUtils.loadTexture("images/cha.png", null, function (t) {
     });
+//    var zidan_cz = THREE.ImageUtils.loadTexture("images/zidan.png", null, function (t) {
+//    });
     //绑定纹理
     var material = new THREE.MeshBasicMaterial({ map: texture });
     var material2 = new THREE.MeshBasicMaterial({ map: texture2 });
 　　 var material3 = new THREE.MeshBasicMaterial({ map: texture3 });
-
+    //var zidan_wl = new THREE.MeshBasicMaterial({ map: zidan_cz });
     // THREE.Texture(image,THREE.UVMapping(-1,-1));
-    //var material = new THREE.MeshBasicMaterial({color: 0x66ccff});
+    var zidan_wl = new THREE.MeshBasicMaterial({color: 0x66ccff});
     var cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
 
@@ -107,6 +91,8 @@ https://github.com/haozi23333/canvas
     xx.position.x = 0;
     xx.position.y = 2;
     scene.add(xx);
+
+
 
 
     var cha = new THREE.PlaneGeometry(3, 1.5);
@@ -119,9 +105,9 @@ https://github.com/haozi23333/canvas
 
     function render() {
         requestAnimationFrame(render);
-        cube.rotation.x += speed_x;
-        cube.rotation.y += speed_y;
+
         //  cube.position.x+=0.1;
+        xuanzhuan(cube);
         renderer.render(scene, camera);
         stats.update();
     }
@@ -150,40 +136,45 @@ https://github.com/haozi23333/canvas
                 break;
         }
     }
-//
-//    function size_up(a) {
-//
-//        switch (a.className) {
-//            case 'x':
-//                a.innerHTML = "现在" + a.className + "大小为：" + box_x + "    点击变大";
-//                box_x += 0.1;
-//                break;
-//            case 'y':
-//                a.innerHTML = "现在" + a.className + "大小为：" + box_y + "    点击变大";
-//                box_y += 0.1;
-//                break;
-//            case 'z':
-//                a.innerHTML = "现在" + a.className + "大小为：" + box_z + "    点击变大";
-//                box_z += 0.1;
-//                break;
-//        }
-//    }
-//    function size_down(a) {
-//
-//        switch (a.className) {
-//            case 'x':
-//                a.innerHTML = "现在" + a.className + "大小为：" + box_x + "    点击变小";
-//                box_x -= 0.1;
-//                break;
-//            case 'y':
-//                a.innerHTML = "现在" + a.className + "大小为：" + box_y + "    点击变小";
-//                box_y -= 0.1;
-//                break;
-//            case 'z':
-//                a.innerHTML = "现在" + a.className + "大小为：" + box_z + "    点击变小";
-//                box_z -= 0.1;
-//                break;
-//        }
-//    }
+
+function key_down(e)
+{
+var _c=window.event.keyCode;
+ switch (_c)
+ {
+     case 37://left
+     cube.position.x-=0.1;
+     d=2;
+         break;
+     case 38://上up
+     cube.position.y+=0.1;
+        d=0;
+         break;
+     case 39://右right
+    cube.position.x+=0.1;
+       d=3;
+         break;
+     case 40://下down
+    cube.position.y-=0.1;
+       d=1;
+         break;
+          case 32://space
+      fashe();
+              break;
+ }
+}
+//q81
+function fashe()
+{
+    var tmp_zd=new THREE.Mesh(new THREE.PlaneGeometry(cube.position.x,  cube.position.y) , zidan_wl);
+    zidan_arr.push(tmp_zd);
+    scene.add(tmp_zd);
+
+}
+function xuanzhuan(a)
+{
+    a.rotation.x += speed_x;
+    a.rotation.y += speed_y;
+}
 
 </script>
