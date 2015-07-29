@@ -9,9 +9,14 @@
      margin:0px;padding:0px;
  }
  </style>
+<script src="javascripts/jquery.min.js"></script>
+<script src="javascripts/socket.io-1.3.6.js"></script>
 </head>
-<body onkeydown="key_down(this)">
+
+<body onkeydown="move(this)">
 <canvas id="canvas" style="margin:0px;padding:0px"></canvas>
+
+
 </body>
 </html>
 
@@ -19,54 +24,43 @@
     var b_height=b_width=50;
     var canvas= document.getElementById('canvas');
     var context=canvas.getContext('2d');
-    var x=y=50,d=1;//0s1x2z3y
-    var speed=10;
+    var x=y=100,d=1;//0s1x2z3y
+    var speed=10,socket;
     canvas.height=window.innerHeight;
     canvas.width=window.innerWidth;
     var zidan=[];
-
-    function addblock(x,y,color,cxt) {
-         cxt.beginPath();
-         cxt.fillStyle=color;
-         cxt.fillRect(x,y,b_width,b_height);
-     }
-     function addround(x,y,R,color,cxt) {
-
-          if (color!='white') {
-            cxt.beginPath();
-            cxt.fillStyle=color;
-            cxt.arc(x,y,R,0,2*Math.PI);
-            cxt.fill();
-          }
-      }
-    function key_down(e)
+    var zd_mun=5;
+    var that=this;
+    var renwu=[];
+    function move(e,ren)
  {
     var _c=window.event.keyCode;
      switch (_c)
      {
          case 37://left
-         if ((x-speed)>0) {
-              x-=speed;
+         if ((renwu[0].x-renwu[0].speed)>0) {
+             renwu[0].x-=renwu[0].speed;
          }
-         d=2;
+            //socket.emit("move":{"name":});
+             renwu[0].fx=2;
              break;
          case 38://上up
-         if ((y-speed)>0) {
-               y-=speed;
+         if ((renwu[0].y-renwu[0].speed)>0) {
+             renwu[0].y-=renwu[0].speed;
          }
-         d=0;
+             renwu[0].fx=0;
              break;
          case 39://右right
-         if ((x+speed)<(canvas.width-b_height)) {
-               x+=speed;
+         if ((renwu[0].x+renwu[0].speed)<(canvas.width-b_height)) {
+             renwu[0].x+=renwu[0].speed;
          }
-         d=3;
+             renwu[0].fx=3;
              break;
          case 40://下down
-         if ((y+speed)<(canvas.height-b_width)) {
-                      y+=speed;
+         if ((renwu[0].y+renwu[0].speed)<(canvas.height-b_width)) {
+             renwu[0].y+=renwu[0].speed;
          }
-         d=1;
+             renwu[0].fx=1;
              break;
               case 32://space
           fashe();
@@ -75,72 +69,127 @@
 }
 window.onload=function ()
 {
-  addblock(x,y,'blue',context);
-  setInterval(function(){
-    update(context);
-  },34)
+    while(!str)
+    {
+        var str = prompt("name ", "XXXXXX");
+        if(str.length>6)
+        {
+            var str="";
+            alert("acceptParams ")
+            continue;
+        }
+        if (str) {
+            alert("您刚输入的是：" + str)
+            that.str=str;
+        }
+    }
+    var socket = new io.connect('http://10.3.16.2:820');
+    socket.on('connect', function () {
+        alert('成功连接socket.io.');
+    });
+    renwu.push({
+        name:str,
+        x:x,
+        y:y,
+        color:"#66ccff",
+        speed:5,
+        namecolor:"red",
+        fx:1
 
+    })
+    socket.emit('join', renwu[0]);
+setInterval(function(){
+    update(context);
+  },34);
+    setInterval(function(){
+        if(zd_mun<5)
+        zd_mun++;
+    },300)
+    socket.on('join', function (data) {
+      renwu.push(data);
+    });
+    socket.on('move', function (data) {
+        for(var i=0;i<renwu.length;i++)
+        {
+            if(renwu[i].name==date.name)
+            {
+
+            }
+        }
+    });
 }
 
 function update(cxt)
 {
-cxt.clearRect(0,0,canvas.height,canvas.width);
-  addblock(x,y,'blue',context);
+cxt.clearRect(0,0,canvas.width,canvas.height);
+
 for (var i = 0; i < zidan.length; i++) {
     switch (zidan[i].fx) {
       case 0:
       if (zidan[i].y<0) {
           zidan[i].y-=zidan[i].speed;
-      zidan[i].speed=0;
-        zidan[i].color='white';
+          zidan.splice(i,1);
+
       }
       zidan[i].y-=zidan[i].speed;
       break;
       case 1:
       if (zidan[i].y>canvas.height) {
         zidan[i].y+=zidan[i].speed;
-        zidan[i].speed=0;
-          zidan[i].color='white';
+          zidan.splice(i,1);
+          break;
       }
      zidan[i].y+=zidan[i].speed;
       break;
       case 2:
       if (zidan[i].x<0) {
           zidan[i].x-=zidan[i].speed;
-        zidan[i].speed=0;
-        zidan[i].color='white';
+          zidan.splice(i,1);
+          break;
       }
      zidan[i].x-=zidan[i].speed;
       break;
       case 3:
       if (zidan[i].x>canvas.width) {
           zidan[i].x+=zidan[i].speed;
-          zidan[i].speed=0;
-          zidan[i].color='white';
+          zidan.splice(i,1);
+          break;
+
       }
       zidan[i].x+=zidan[i].speed;
       break;
     }
-    addround(zidan[i].x,zidan[i].y,zidan[i].r,'red',context);
+    addround(zidan[i].x,zidan[i].y,zidan[i].r,zidan[i].color,context);
 }
-
+  //    addblock(x,y,'blue',context);
+//    addText(x,y+b_height/2,150,"red",context,str);
+    for(var i=0;i<renwu.length;i++ )
+    {
+        addblock(renwu[i].x,renwu[i].y,renwu[i].color,cxt);
+        addText(renwu[i].x,renwu[i].y+b_height/2,150,renwu[i].namecolor,cxt,renwu[i].name);
+    }
 }
 
 function fashe()
 {
+    if(zd_mun==0)
+    {
+      return 0;
+    }
+zd_mun--;
   var zd={
-    x:x,
-    y:y,
-    fx:d,
+    x:renwu[0].x,
+    y:renwu[0].y,
+    fx:renwu[0].fx,
     speed:5,
-    color:'red',
+    color:'green',
     type:'pt',
     height:20,
     width:20,
     r:10,
     mun:zidan.length
   }
-  switch (d) {
+  switch (renwu[0].fx) {
     case 0:
     zd.x+=b_width/2;
     zd.y-=10;
@@ -160,16 +209,28 @@ function fashe()
   }
 zidan.push(zd);
 }
-function addmonster()
-{
+    function addblock(x,y,color,cxt) {
+        cxt.beginPath();
+        cxt.fillStyle=color;
+        cxt.fillRect(x,y,b_width,b_height);
+    }
+    function addround(x,y,R,color,cxt) {
+
+        if (color!='white') {
+            cxt.beginPath();
+            cxt.fillStyle=color;
+            cxt.arc(x,y,R,0,2*Math.PI);
+            cxt.fill();
+        }
+    }
+    function addText(x,y,k,color,cxt,text)
+    {
+        cxt.font="17px 宋体";
+       cxt.beginPath();
+        cxt.fillStyle=color;
+        cxt.fillText(text,x,y,k);
+    }
 
 
 
-}
-
-
-function sj()
-{
-
-}
 </script>
